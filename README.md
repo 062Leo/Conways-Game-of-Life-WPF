@@ -1,1 +1,1 @@
-# Conway-s-Game-of-Life-C-WPF
+# Conways-Game-of-Life-WPF
