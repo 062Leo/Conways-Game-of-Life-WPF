@@ -539,8 +539,12 @@ namespace GameOfLife
                     liveCellsDirty = true;
                     DrawCells();
                 }
-                else if (simulationRunning && liveCells.Count == 0)
+                else
                 {
+                    // A generation identical to its predecessor can never change
+                    // again, so there is nothing left to compute. This covers an
+                    // empty grid as well as a still life, which used to keep the
+                    // timer ticking forever.
                     StopSimulation();
                 }
             }
@@ -751,11 +755,8 @@ namespace GameOfLife
             if (cellSize <= 0) return;
 
             // Calculate how many cells fit and ensure the number is odd
-            GridWidth = (int)Math.Floor(CanvasContainer.ActualWidth / cellSize);
-            if (GridWidth % 2 == 0) GridWidth--; // Make it odd
-
-            GridHeight = (int)Math.Floor(CanvasContainer.ActualHeight / cellSize);
-            if (GridHeight % 2 == 0) GridHeight--; // Make it odd
+            GridWidth = LifeRules.FitOddCells(CanvasContainer.ActualWidth, cellSize);
+            GridHeight = LifeRules.FitOddCells(CanvasContainer.ActualHeight, cellSize);
 
             // Update the center cell coordinate
             _centerCell = new Point(GridWidth / 2, GridHeight / 2);

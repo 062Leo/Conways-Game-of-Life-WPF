@@ -93,5 +93,27 @@ namespace GameOfLife
         {
             return x >= 0 && y >= 0 && x < gridWidth && y < gridHeight;
         }
+
+        /// <summary>
+        /// How many cells fit along one axis. Always odd, so the grid has a single
+        /// center cell, and never below 1: a window narrow enough to fit fewer
+        /// cells than one used to produce a count of -1, and the negative canvas
+        /// size that followed made WPF throw.
+        /// </summary>
+        public static int FitOddCells(double available, double cellSize)
+        {
+            if (cellSize <= 0 || available <= 0)
+            {
+                return 1;
+            }
+
+            int count = (int)System.Math.Floor(available / cellSize);
+            if (count % 2 == 0)
+            {
+                count--;
+            }
+
+            return count < 1 ? 1 : count;
+        }
     }
 }
