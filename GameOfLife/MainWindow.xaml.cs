@@ -367,7 +367,7 @@ namespace GameOfLife
 
         private bool IsCellWithinGrid(int x, int y)
         {
-            return x >= 0 && x < GridWidth && y >= 0 && y < GridHeight;
+            return LifeRules.IsWithinGrid(x, y, GridWidth, GridHeight);
         }
 
         private bool ApplyBrush(Point center, bool add)
@@ -531,62 +531,7 @@ namespace GameOfLife
                     return;
                 }
 
-                var neighborCounts = new Dictionary<Point, int>();
-
-                foreach (var cell in liveCells)
-                {
-                    int cellX = (int)cell.X;
-                    int cellY = (int)cell.Y;
-
-                    for (int dx = -1; dx <= 1; dx++)
-                    {
-                        for (int dy = -1; dy <= 1; dy++)
-                        {
-                            if (dx == 0 && dy == 0)
-                            {
-                                continue;
-                            }
-
-                            int neighborX = cellX + dx;
-                            int neighborY = cellY + dy;
-
-                            if (!IsCellWithinGrid(neighborX, neighborY))
-                            {
-                                continue;
-                            }
-
-                            var neighbor = new Point(neighborX, neighborY);
-
-                            if (neighborCounts.TryGetValue(neighbor, out int count))
-                            {
-                                neighborCounts[neighbor] = count + 1;
-                            }
-                            else
-                            {
-                                neighborCounts[neighbor] = 1;
-                            }
-                        }
-                    }
-                }
-
-                var nextGeneration = new HashSet<Point>();
-
-                foreach (var cell in liveCells)
-                {
-                    int liveNeighbors = neighborCounts.TryGetValue(cell, out int count) ? count : 0;
-                    if (liveNeighbors == 2 || liveNeighbors == 3)
-                    {
-                        nextGeneration.Add(cell);
-                    }
-                }
-
-                foreach (var kvp in neighborCounts)
-                {
-                    if (!liveCells.Contains(kvp.Key) && kvp.Value == 3)
-                    {
-                        nextGeneration.Add(kvp.Key);
-                    }
-                }
+                var nextGeneration = LifeRules.Step(liveCells, GridWidth, GridHeight);
 
                 if (!liveCells.SetEquals(nextGeneration))
                 {
