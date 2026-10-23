@@ -82,6 +82,8 @@ namespace GameOfLife.Tests
 
         public T Field<T>(string name) => (T)Window.GetType().GetField(name, Hidden)!.GetValue(Window)!;
 
+        public void SetField(string name, object? value) => Window.GetType().GetField(name, Hidden)!.SetValue(Window, value);
+
         public object? Call(string name, params object?[] args)
             => Window.GetType().GetMethod(name, Hidden)!.Invoke(Window, args);
 

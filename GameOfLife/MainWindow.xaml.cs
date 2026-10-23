@@ -769,6 +769,10 @@ namespace GameOfLife
             // promise a place that is no longer there. The next mouse move builds
             // the preview again from the pointer.
             ClearHoverPreview();
+
+            // Same for the anchor a drag draws its line from: it belongs to the grid
+            // the pointer was on, not to this one.
+            lastCell = null;
         }
 
         // Canvas Interaktion
