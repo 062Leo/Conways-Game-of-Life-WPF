@@ -763,6 +763,12 @@ namespace GameOfLife
             double offsetX = (CanvasContainer.ActualWidth - GameCanvas.Width) / 2;
             double offsetY = (CanvasContainer.ActualHeight - GameCanvas.Height) / 2;
             GameCanvas.Margin = new Thickness(offsetX, offsetY, 0, 0);
+
+            // The hover preview is held in grid coordinates and says where the next
+            // click lands. The grid just moved under the pointer, so the old cells
+            // promise a place that is no longer there. The next mouse move builds
+            // the preview again from the pointer.
+            ClearHoverPreview();
         }
 
         // Canvas Interaktion
