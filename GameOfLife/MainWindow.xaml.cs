@@ -313,17 +313,9 @@ namespace GameOfLife
         {
             if (IsPrefabPlacementMode && _selectedPrefabCells != null && _selectedPrefabOffsets.Count > 0)
             {
-                int baseX = (int)anchor.X;
-                int baseY = (int)anchor.Y;
-
-                foreach (var (offsetX, offsetY) in _selectedPrefabOffsets)
+                foreach (var cell in LifeRules.StampCells((int)anchor.X, (int)anchor.Y, _selectedPrefabOffsets, GridWidth, GridHeight))
                 {
-                    int x = baseX + offsetX;
-                    int y = baseY + offsetY;
-                    if (IsCellWithinGrid(x, y))
-                    {
-                        yield return new Point(x, y);
-                    }
+                    yield return cell;
                 }
                 yield break;
             }

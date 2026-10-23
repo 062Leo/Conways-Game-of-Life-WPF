@@ -95,6 +95,76 @@ namespace GameOfLife
         }
 
         /// <summary>
+        /// The cells a stamp (a prefab) covers when it is dropped on an anchor cell.
+        /// The offsets are measured from the stamp's top left corner, which is the
+        /// anchor itself.
+        ///
+        /// The anchor is pulled back far enough for the whole stamp to stay on the
+        /// grid: near the right or bottom edge the cells that no longer fit used to
+        /// be dropped silently, which placed a fragment of the pattern instead of
+        /// the pattern. Only a stamp larger than the grid still gets cut off.
+        /// </summary>
+        public static List<Point> StampCells(int anchorX, int anchorY, IReadOnlyList<(int X, int Y)> offsets, int gridWidth, int gridHeight)
+        {
+            var cells = new List<Point>();
+
+            if (offsets.Count == 0 || gridWidth <= 0 || gridHeight <= 0)
+            {
+                return cells;
+            }
+
+            int lastOffsetX = 0;
+            int lastOffsetY = 0;
+            foreach (var (offsetX, offsetY) in offsets)
+            {
+                if (offsetX > lastOffsetX)
+                {
+                    lastOffsetX = offsetX;
+                }
+                if (offsetY > lastOffsetY)
+                {
+                    lastOffsetY = offsetY;
+                }
+            }
+
+            anchorX = ClampStampStart(anchorX, lastOffsetX + 1, gridWidth);
+            anchorY = ClampStampStart(anchorY, lastOffsetY + 1, gridHeight);
+
+            foreach (var (offsetX, offsetY) in offsets)
+            {
+                int x = anchorX + offsetX;
+                int y = anchorY + offsetY;
+
+                if (IsWithinGrid(x, y, gridWidth, gridHeight))
+                {
+                    cells.Add(new Point(x, y));
+                }
+            }
+
+            return cells;
+        }
+
+        /// <summary>
+        /// Where a stamp of this size has to start so it ends inside the grid. A
+        /// stamp wider than the grid starts at 0, there is no position that fits.
+        /// </summary>
+        private static int ClampStampStart(int start, int stampSize, int gridSize)
+        {
+            int last = gridSize - stampSize;
+            if (last < 0)
+            {
+                last = 0;
+            }
+
+            if (start > last)
+            {
+                start = last;
+            }
+
+            return start < 0 ? 0 : start;
+        }
+
+        /// <summary>
         /// How many cells fit along one axis. Always odd, so the grid has a single
         /// center cell, and never below 1: a window narrow enough to fit fewer
         /// cells than one used to produce a count of -1, and the negative canvas
