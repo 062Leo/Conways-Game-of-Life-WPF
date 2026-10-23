@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Threading;
 using System.Windows;
@@ -78,6 +79,19 @@ namespace GameOfLife.Tests
             container.Measure(new Size(width, height));
             container.Arrange(new Rect(0, 0, width, height));
             container.UpdateLayout();
+        }
+
+        /// <summary>The cells currently alive on the window's grid.</summary>
+        public HashSet<Point> LiveCells => Field<HashSet<Point>>("liveCells");
+
+        /// <summary>
+        /// The canvas pixel at the middle of a grid cell, which is what a mouse
+        /// position over that cell looks like.
+        /// </summary>
+        public Point Pixel(int cellX, int cellY)
+        {
+            double size = Field<double>("cellSize");
+            return new Point((cellX + 0.5) * size, (cellY + 0.5) * size);
         }
 
         public T Field<T>(string name) => (T)Window.GetType().GetField(name, Hidden)!.GetValue(Window)!;

@@ -112,6 +112,7 @@
             MouseDown="Canvas_MouseDown"
             MouseMove="Canvas_MouseMove"
             MouseUp="Canvas_MouseUp"
+            LostMouseCapture="Canvas_LostMouseCapture"
             MouseLeave="Canvas_MouseLeave"/>
         </Border>
 

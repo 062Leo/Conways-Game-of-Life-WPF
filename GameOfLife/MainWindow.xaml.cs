@@ -780,12 +780,28 @@ namespace GameOfLife
         // Canvas Interaktion
         private Point? lastCell = null;
 
+        // Ein Zug zaehlt nur, wenn er auf dem Canvas begonnen hat. Eine gedrueckte
+        // Maustaste allein genuegt nicht: ein Druck auf die Toolbar, gehalten und
+        // auf das Canvas gezogen, hat nie eine Zelle gewaehlt.
+        private bool dragStartedOnCanvas = false;
+
 
         private void Canvas_MouseMove(object sender, MouseEventArgs e)
         {
             if (GameCanvas == null || cellSize <= 0) return;
 
-            Point mousePos = e.GetPosition(GameCanvas);
+            HandlePointerMove(
+                e.GetPosition(GameCanvas),
+                e.LeftButton == MouseButtonState.Pressed,
+                e.RightButton == MouseButtonState.Pressed);
+        }
+
+        /// <summary>
+        /// Die Bewegung selbst, getrennt von den Mausargumenten, die sich nicht
+        /// bauen lassen: so laesst sich das Zeichnen mit echtem Zustand testen.
+        /// </summary>
+        private void HandlePointerMove(Point mousePos, bool leftPressed, bool rightPressed)
+        {
             if (!TryGetCellFromMouse(mousePos, out Point currentCell))
             {
                 ClearHoverPreview();
@@ -795,16 +811,13 @@ namespace GameOfLife
 
             UpdateHoverCells(currentCell);
 
-            bool leftPressed = e.LeftButton == MouseButtonState.Pressed;
-            bool rightPressed = e.RightButton == MouseButtonState.Pressed;
-
             bool changed = false;
 
-            if (leftPressed)
+            if (dragStartedOnCanvas && leftPressed)
             {
                 changed = AddCellsBetween(lastCell, currentCell, true);
             }
-            else if (rightPressed)
+            else if (dragStartedOnCanvas && rightPressed)
             {
                 changed = AddCellsBetween(lastCell, currentCell, false);
             }
@@ -820,6 +833,17 @@ namespace GameOfLife
 
         private void Canvas_MouseUp(object sender, MouseButtonEventArgs e)
         {
+            EndDrag();
+        }
+
+        private void Canvas_LostMouseCapture(object sender, MouseEventArgs e)
+        {
+            EndDrag();
+        }
+
+        private void EndDrag()
+        {
+            dragStartedOnCanvas = false;
             lastCell = null;
         }
 
@@ -903,18 +927,26 @@ namespace GameOfLife
         {
             if (GameCanvas == null || cellSize <= 0) return;
 
-            Point mousePos = e.GetPosition(GameCanvas);
+            HandlePointerDown(e.GetPosition(GameCanvas), e.ChangedButton);
+        }
+
+        /// <summary>
+        /// Der Druck selbst, getrennt von den Mausargumenten, die sich nicht bauen
+        /// lassen.
+        /// </summary>
+        private void HandlePointerDown(Point mousePos, MouseButton button)
+        {
             if (!TryGetCellFromMouse(mousePos, out Point cell))
             {
                 return;
             }
 
             bool changed = false;
-            if (e.ChangedButton == MouseButton.Left)
+            if (button == MouseButton.Left)
             {
                 changed = ApplyBrush(cell, true);
             }
-            else if (e.ChangedButton == MouseButton.Right)
+            else if (button == MouseButton.Right)
             {
                 changed = ApplyBrush(cell, false);
             }
@@ -923,6 +955,7 @@ namespace GameOfLife
                 return;
             }
 
+            dragStartedOnCanvas = true;
             lastCell = cell;
             UpdateHoverCells(cell);
             DrawHoverPreview();
