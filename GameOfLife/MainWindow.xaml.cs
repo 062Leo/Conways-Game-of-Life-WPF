@@ -45,8 +45,6 @@ namespace GameOfLife
         private const string DefaultPrefabButtonContent = "Select Prefab";
         private string? _selectedPrefabName;
         private bool[,]? _selectedPrefabCells;
-        private int _selectedPrefabWidth;
-        private int _selectedPrefabHeight;
         private readonly List<(int X, int Y)> _selectedPrefabOffsets = new();
 
         private bool IsPrefabPlacementMode => DrawModeSelector != null && DrawModeSelector.SelectedIndex == 1 && _selectedPrefabOffsets.Count > 0;
@@ -623,8 +621,6 @@ namespace GameOfLife
             if (cells == null)
             {
                 _selectedPrefabCells = null;
-                _selectedPrefabWidth = 0;
-                _selectedPrefabHeight = 0;
                 _selectedPrefabOffsets.Clear();
                 return;
             }
@@ -642,8 +638,6 @@ namespace GameOfLife
             }
 
             _selectedPrefabCells = clone;
-            _selectedPrefabWidth = width;
-            _selectedPrefabHeight = height;
 
             _selectedPrefabOffsets.Clear();
             for (int x = 0; x < width; x++)
@@ -671,10 +665,22 @@ namespace GameOfLife
         }
 
         // Zoom
+        // Die Zellgroesse in Pixeln. Der Regler teilt diese Spanne nur auf, er legt
+        // sie nicht fest: eine andere Reglerspanne aendert die Feinheit der Stufen,
+        // nicht die Groesse einer Zelle.
+        private const double LargestCellSize = 30;
+        private const double SmallestCellSize = 13;
+
         private void UpdateCellSizeFromSlider()
         {
             if (ZoomSlider == null) return;
-            cellSize = (ZoomSlider.Maximum + ZoomSlider.Minimum) - ZoomSlider.Value;
+
+            // Der Regler zaehlt nach rechts aufwaerts, die Zellgroesse laeuft dagegen:
+            // weiter rechts heisst kleinere Zellen und damit mehr Zellen im Fenster.
+            double span = ZoomSlider.Maximum - ZoomSlider.Minimum;
+            double position = span > 0 ? (ZoomSlider.Value - ZoomSlider.Minimum) / span : 0;
+
+            cellSize = LargestCellSize - position * (LargestCellSize - SmallestCellSize);
         }
 
         private void ZoomSlider_ValueChanged(object sender, RoutedPropertyChangedEventArgs<double> e)
@@ -912,9 +918,6 @@ namespace GameOfLife
         }
 
 
-        private void Canvas_LeftUp(object sender, MouseButtonEventArgs e) { }
-        private void Canvas_RightUp(object sender, MouseButtonEventArgs e) { }
-        
         private void Canvas_MouseLeave(object sender, MouseEventArgs e)
         {
             ClearHoverPreview();
