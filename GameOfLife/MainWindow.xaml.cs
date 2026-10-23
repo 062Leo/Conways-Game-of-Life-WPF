@@ -65,6 +65,7 @@ namespace GameOfLife
                 Resources["DeadCellColor"] = Resources["DarkDeadCellColor"];
                 Resources["LiveCellColor"] = Resources["DarkLiveCellColor"];
                 Resources["ToolbarColor"] = Resources["DarkToolbarColor"];
+                Resources["ToolbarForegroundColor"] = Resources["DarkToolbarForegroundColor"];
             }
             else
             {
@@ -73,6 +74,7 @@ namespace GameOfLife
                 Resources["DeadCellColor"] = Resources["LightDeadCellColor"];
                 Resources["LiveCellColor"] = Resources["LightLiveCellColor"];
                 Resources["ToolbarColor"] = Resources["LightToolbarColor"];
+                Resources["ToolbarForegroundColor"] = Resources["LightToolbarForegroundColor"];
             }
 
             // Update existing UI elements

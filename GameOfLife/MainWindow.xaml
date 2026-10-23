@@ -11,6 +11,7 @@
         <SolidColorBrush x:Key="DarkDeadCellColor" Color="Black"/>
         <SolidColorBrush x:Key="DarkLiveCellColor" Color="Yellow"/>
         <SolidColorBrush x:Key="DarkToolbarColor" Color="#2d2d2d"/>
+        <SolidColorBrush x:Key="DarkToolbarForegroundColor" Color="#E8E8E8"/>
 
         <!-- Light Theme -->
         <SolidColorBrush x:Key="LightWindowBackgroundColor" Color="#F5F5F5"/>
@@ -18,12 +19,15 @@
         <SolidColorBrush x:Key="LightDeadCellColor" Color="White"/>
         <SolidColorBrush x:Key="LightLiveCellColor" Color="Black"/>
         <SolidColorBrush x:Key="LightToolbarColor" Color="#EEE"/>
+        <SolidColorBrush x:Key="LightToolbarForegroundColor" Color="#1E1E1E"/>
     </Window.Resources>
 
     <DockPanel>
 
         <!-- TOOLBAR -->
-        <ToolBar DockPanel.Dock="Top" Background="#EEE" Padding="5">
+        <ToolBar x:Name="MainToolBar" DockPanel.Dock="Top" Padding="5"
+                 Background="{DynamicResource ToolbarColor}"
+                 Foreground="{DynamicResource ToolbarForegroundColor}">
 
             <Button x:Name="ToggleSimulationButton"
                     Width="100"
@@ -70,7 +74,7 @@
             <!-- Brush Size -->
             <StackPanel Margin="20,0,0,0" Width="130">
                 <TextBlock Text="Pinselgröße" HorizontalAlignment="Center"/>
-                <Slider x:Name="BrushSizeSlider" Minimum="0" Maximum="2" Value="0" IsSnapToTickEnabled="True"
+                <Slider Foreground="{DynamicResource ToolbarForegroundColor}" x:Name="BrushSizeSlider" Minimum="0" Maximum="2" Value="0" IsSnapToTickEnabled="True"
                         TickFrequency="1" TickPlacement="BottomRight" Width="120" ValueChanged="BrushSizeSlider_ValueChanged"/>
                 <UniformGrid Columns="3" Margin="0,2,0,0">
                     <TextBlock Text="1x1" HorizontalAlignment="Center"/>
@@ -85,14 +89,14 @@
             <!-- Zoom -->
             <StackPanel Margin="20,0,0,0">
                 <TextBlock Text="Cell Amount" HorizontalAlignment="Center"/>
-                <Slider x:Name="ZoomSlider" Minimum="13" Maximum="30" Value="13" IsSnapToTickEnabled="True" TickFrequency="1"
+                <Slider Foreground="{DynamicResource ToolbarForegroundColor}" x:Name="ZoomSlider" Minimum="13" Maximum="30" Value="13" IsSnapToTickEnabled="True" TickFrequency="1"
                         Width="150" ValueChanged="ZoomSlider_ValueChanged"/>
             </StackPanel>
 
             <!-- Simulation Speed -->
             <StackPanel Margin="20,0,0,0" Width="150">
                 <TextBlock Text="Geschwindigkeit" HorizontalAlignment="Center"/>
-                <Slider x:Name="SpeedSlider" Minimum="0" Maximum="4" Value="2" IsSnapToTickEnabled="True"
+                <Slider Foreground="{DynamicResource ToolbarForegroundColor}" x:Name="SpeedSlider" Minimum="0" Maximum="4" Value="2" IsSnapToTickEnabled="True"
                         TickFrequency="1" Width="140" ValueChanged="SpeedSlider_ValueChanged"/>
                 <DockPanel Margin="0,2,0,0">
                     <TextBlock Text="Langsam" DockPanel.Dock="Left"/>
