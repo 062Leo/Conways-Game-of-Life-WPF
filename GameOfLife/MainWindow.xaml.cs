@@ -34,8 +34,13 @@ namespace GameOfLife
         private StreamGeometry gridGeometry = new StreamGeometry();
         private bool gridNeedsRedraw = true;
         private bool liveCellsDirty = true;
-        private readonly DispatcherTimer zoomRedrawTimer;
-        private readonly DispatcherTimer simulationTimer;
+        // Die Timer entstehen vor InitializeComponent, denn die ValueChanged-Handler
+        // der Slider laufen schon waehrend des Parsens und greifen auf sie zu.
+        private readonly DispatcherTimer zoomRedrawTimer = new DispatcherTimer
+        {
+            Interval = TimeSpan.FromMilliseconds(50)
+        };
+        private readonly DispatcherTimer simulationTimer = new DispatcherTimer();
         private bool zoomRedrawPending = false;
         private const string DefaultPrefabButtonContent = "Select Prefab";
         private string? _selectedPrefabName;
@@ -387,17 +392,8 @@ namespace GameOfLife
             liveCellOutlinePath.StrokeThickness = 0.5;
             liveCellOutlinePath.Fill = Brushes.Transparent;
 
-        
-            zoomRedrawTimer = new DispatcherTimer
-            {
-                Interval = TimeSpan.FromMilliseconds(50)
-            };
-            zoomRedrawTimer.Tick += ZoomRedrawTimer_Tick;
 
-            simulationTimer = new DispatcherTimer
-            {
-                Interval = simulationInterval
-            };
+            zoomRedrawTimer.Tick += ZoomRedrawTimer_Tick;
             simulationTimer.Tick += SimulationTimer_Tick;
 
             ApplySimulationSpeedFromSlider();
@@ -589,10 +585,11 @@ namespace GameOfLife
             }
 
             simulationInterval = SimulationSpeedSteps[index];
-            if (simulationRunning)
-            {
-                simulationTimer.Interval = simulationInterval;
-            }
+
+            // Der Timer traegt immer die Geschwindigkeit des Reglers, auch im Stand.
+            // Darum existiert er ab der ersten Zeile des Konstruktors: dieser Zugriff
+            // laeuft bereits waehrend InitializeComponent.
+            simulationTimer.Interval = simulationInterval;
         }
 
         // DrawMode
